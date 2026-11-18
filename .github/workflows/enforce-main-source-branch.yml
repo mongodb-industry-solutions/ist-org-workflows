@@ -1,0 +1,19 @@
+name: enforce-main-source-branch
+
+# Required workflow (org ruleset "workflows" rule).
+# Fails any PR targeting `main` whose head branch is not `staging`,
+# enforcing the gitflow rule that main only accepts promotions from staging.
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  source-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: PRs to main must originate from staging
+        run: |
+          if [ "${{ github.head_ref }}" != "staging" ]; then
+            echo "::error::PRs to main must come from the 'staging' branch (got '${{ github.head_ref }}')."
+            exit 1
+          fi
